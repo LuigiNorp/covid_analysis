@@ -1,0 +1,63 @@
+/* 
+select * from coviddeaths
+
+select location, date, total_cases, new_cases, total_deaths, population from coviddeaths
+
+-- Looking At Total Cases Vs Total Deaths
+-- Show the Death Percentage of Cases (Likelihood of dying if you contract covid in your country)
+
+select location, 
+	date,
+	total_cases, 
+	total_deaths,  
+	(cast(total_deaths as float)/total_cases)*100 as death_percentage
+from coviddeaths
+where location like '%States%'
+order by 1,2 --bad habit
+-- Looking at Total Cases vs Population From United States
+-- Shows what percentage of population got COVID
+
+select location, 
+	date, 
+	total_cases, 
+	population, 
+	(cast(total_cases as float)/population)*100 as covid_percentage
+from coviddeaths
+where location like '%States%'
+
+-- Looking at Countries With Highest Infection Rate Compared to Population
+
+select location, 
+	population, 
+	max(total_cases) as highest_infection_count,
+	max((cast(total_cases as float)/population))*100 as percentage_infected
+from coviddeaths
+group by location, population
+order by percentage_infected desc
+
+-- Showing Countries With Highest Death Count Per Population
+
+select location, 
+	max(total_deaths) as total_death_count
+	from coviddeaths
+	where continent is not null and total_deaths is not null
+	group by location
+	order by total_death_count desc
+
+-- Showing Continent With Highest Death Count Per Population
+select continent,
+	max(total_deaths) as total_death_count
+	from coviddeaths
+	where continent is not null and total_deaths is not null
+	group by continent
+	order by total_death_count desc
+*/
+-- Global Numbers
+select --date, 
+	sum(new_cases) as new_cases_per_day, 
+	sum(new_deaths) as new_deaths_per_day, 
+	cast(sum(new_deaths)/sum(new_cases) as float)*100 as death_percentage
+	from coviddeaths
+	where continent is not null
+	--group by date
+	order by 1,2
